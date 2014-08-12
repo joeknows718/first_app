@@ -10,6 +10,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import os
 from flask.ext.script import Shell
 from flask.ext.script import Manager
+from flask.ext.migrate import Migrate, MigrateCommand
 
 #config
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -52,6 +53,8 @@ class NameForm(Form):
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 manager = Manager(app)
+migrate = Migrate(app, db)
+manager.add_command('db', MigrateCommand)
 
 def make_shell_context():
 	return dict(app=app, db=db, User=User, Role=Role)
