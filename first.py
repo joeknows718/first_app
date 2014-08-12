@@ -8,6 +8,8 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
+from flask.ext.script import Shell
+from flask.ext.script import Manager
 
 #config
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -49,16 +51,20 @@ class NameForm(Form):
 
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+manager = Manager(app)
+
+def make_shell_context():
+	return dict(app=app, db=db, User=User, Role=Role)
+manager.add_command("shell", Shell(make_context=make_shell_context))
 
 #Routes 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-	name = None
 	form = NameForm()
 	if form.validate_on_submit():
 		user = User.query.filter_by(username=form.name.data).first()
 		if user is None:
-			user = User(username = name.form.data)
+			user = User(username=form.name.data)
 			db.session.add(user)
 			session['known'] = False 
 		else:
